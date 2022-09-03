@@ -1,0 +1,18 @@
+# Cargo
+/target
+Cargo.lock
+
+# config
+config
+**/*.json
+
+# Environment
+**/.env
+
+# Keys
+**/*.jks
+**/*.p8
+**/*.pem
+
+# VS Code
+.vscode

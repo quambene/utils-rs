@@ -1,0 +1,16 @@
+[package]
+name = "utils-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.63"
+log = "0.4.17"
+fern = { version = "0.6.1",  default-features = false, features = ["colored"] }
+chrono = { version = "0.4.22", default-features = false, features = ["clock"] }
+url = "2.2.2"
+futures = "0.3.24"
+tokio = { version = "1.21.0", features = ["rt-multi-thread", "macros"] }
+tungstenite = { version = "0.17.3", features = ["rustls-tls-native-roots"] }
+tokio-tungstenite = { version = "0.17.2", features = ["rustls-tls-native-roots"] }
+serde_json = "1.0.85"
