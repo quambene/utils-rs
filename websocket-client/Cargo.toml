@@ -1,0 +1,16 @@
+[package]
+name = "websocket-client"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+path = "src/main.rs"
+name = "websocket_client"
+
+[dependencies]
+logger = { version = "0.1.0", path = "../logger" }
+websocket-utils = { version = "0.1.0", path = "../websocket-utils" }
+log = "0.4.17"
+anyhow = "1.0.63"
+futures = "0.3.24"
+tokio = { version = "1.21.0", features = ["rt-multi-thread", "macros"] }

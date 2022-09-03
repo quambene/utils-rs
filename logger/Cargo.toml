@@ -1,0 +1,13 @@
+[package]
+name = "logger"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+path = "src/lib.rs"
+name = "logger"
+
+[dependencies]
+log = "0.4.17"
+fern = { version = "0.6.1",  default-features = false, features = ["colored"] }
+chrono = { version = "0.4.22", default-features = false, features = ["clock"] }

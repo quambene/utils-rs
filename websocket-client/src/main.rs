@@ -1,6 +1,3 @@
-mod logger;
-mod websocket;
-
 use anyhow::Context;
 use futures::StreamExt;
 use log::error;
@@ -9,7 +6,7 @@ use log::error;
 async fn main() -> Result<(), anyhow::Error> {
     logger::start().context("Can't set up logging")?;
 
-    let mut stream = websocket::connect().await?;
+    let mut stream = websocket_utils::connect().await?;
 
     while let Some(item) = stream.next().await {
         match item {
