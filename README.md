@@ -21,7 +21,7 @@ Utility tool for testing websocket endpoints for streaming data.
 
 #### Usage
 
-1. Create config file, e.g. `config.json`:
+1. Create config file, e.g. `config.json`, with content:
 
     ``` bash
     {
