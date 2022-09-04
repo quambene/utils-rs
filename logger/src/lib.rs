@@ -1,8 +1,8 @@
 use chrono::Utc;
 use fern::colors::{Color, ColoredLevelConfig};
-use log::info;
+use log::SetLoggerError;
 
-pub fn start() -> Result<(), anyhow::Error> {
+pub fn start() -> Result<(), SetLoggerError> {
     let colors = ColoredLevelConfig::new()
         .error(Color::Red)
         .info(Color::Green)
@@ -25,4 +25,16 @@ pub fn start() -> Result<(), anyhow::Error> {
         .apply()?;
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_start() {
+        let res = start();
+
+        assert!(res.is_ok());
+    }
 }
