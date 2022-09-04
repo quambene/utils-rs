@@ -12,5 +12,6 @@ logger = { version = "0.1.0", path = "../logger" }
 websocket-utils = { version = "0.1.0", path = "../websocket-utils" }
 log = "0.4.17"
 anyhow = "1.0.63"
+thiserror = "1.0.33"
 futures = "0.3.24"
 tokio = { version = "1.21.0", features = ["rt-multi-thread", "macros"] }

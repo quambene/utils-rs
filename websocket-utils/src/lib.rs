@@ -2,7 +2,7 @@ use anyhow::{anyhow, Context};
 use futures::{SinkExt, Stream, StreamExt};
 use log::info;
 use std::{env, fs, path::Path};
-use tungstenite::{Error, Message};
+pub use tungstenite::{Error, Message};
 use url::Url;
 
 pub async fn connect() -> Result<impl Stream<Item = Result<Message, Error>>, anyhow::Error> {
