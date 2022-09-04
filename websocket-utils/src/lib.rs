@@ -1,22 +1,25 @@
-use anyhow::{anyhow, Context};
+use anyhow::anyhow;
 use futures::{SinkExt, Stream, StreamExt};
 use log::info;
-use std::{env, fs, path::Path};
+use serde::Deserialize;
+use serde_json::Value;
 pub use tungstenite::{Error, Message};
 use url::Url;
 
-pub async fn connect() -> Result<impl Stream<Item = Result<Message, Error>>, anyhow::Error> {
-    let api_url = env::var("API_URL").context("Missing environment variable 'API_URL'")?;
-    let websocket_url = Url::parse(&api_url)?;
-    let subscription_path = env::var("SUBSCRIPTION_PATH")
-        .context("Missing environment variable 'SUBSCRIPTION_PATH'")?;
-    let subscription_path = Path::new(&subscription_path);
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Config {
+    api_url: String,
+    subscription_request: Value,
+}
 
-    info!("Reading file '{}'", subscription_path.display());
-    let subscription_file = fs::read_to_string(subscription_path)?;
+pub async fn connect(
+    config: Config,
+) -> Result<impl Stream<Item = Result<Message, Error>>, anyhow::Error> {
+    info!("Connecting to websocket at url '{}'", config.api_url);
+    let api_url = Url::parse(&config.api_url)?;
 
-    info!("Connecting to websocket at url '{}'", api_url);
-    let (socket, response) = tokio_tungstenite::connect_async(websocket_url).await?;
+    let (socket, response) = tokio_tungstenite::connect_async(api_url).await?;
 
     // Check if protocol was changed to websocket protocol (see
     // https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml)
@@ -26,9 +29,12 @@ pub async fn connect() -> Result<impl Stream<Item = Result<Message, Error>>, any
 
         let (mut sink, stream) = socket.split();
 
-        let subscription_message = Message::Text(subscription_file);
+        let subscription_message = Message::Text(config.subscription_request.to_string());
 
-        info!("Subscribing to channel");
+        info!(
+            "Sending subscription request: {}",
+            config.subscription_request
+        );
 
         sink.send(subscription_message).await?;
 
