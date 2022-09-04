@@ -19,6 +19,9 @@ cd utils-rs
 
 Utility tool for testing websocket endpoints for streaming data.
 
+The client connects to websocket endpoint `apiUrl` and subscribes to a websocket
+channel by sending the request `subscriptionRequest`.
+
 #### Usage
 
 1. Create config file, e.g. `config.json`, with content:
