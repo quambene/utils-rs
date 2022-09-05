@@ -1,3 +1,4 @@
+use crate::json::{prettify, JsonError};
 use std::{
     fmt,
     str::{self, Utf8Error},
@@ -14,6 +15,14 @@ pub(crate) struct Item {
 pub(crate) enum ItemError {
     #[error("Can't convert to string: {0}")]
     Utf8Error(String),
+    #[error("Can't prettify json: {0}")]
+    PrettifyError(String),
+}
+
+impl From<JsonError> for ItemError {
+    fn from(err: JsonError) -> Self {
+        Self::PrettifyError(err.to_string())
+    }
 }
 
 impl Item {
@@ -27,26 +36,40 @@ impl TryFrom<Message> for Item {
 
     fn try_from(message: Message) -> Result<Self, Self::Error> {
         match message {
-            Message::Text(data) => Ok(Item::new(data, "Text".to_string())),
+            Message::Text(data) => {
+                let content = prettify(&data)?;
+                let item = Item::new(content, "Text".to_string());
+                Ok(item)
+            }
             Message::Binary(ref data) => {
                 let content = str::from_utf8(data)?;
-                Ok(Item::new(content.to_string(), "Binary".to_string()))
+                let content = prettify(content)?;
+                let item = Item::new(content, "Binary".to_string());
+                Ok(item)
             }
             Message::Ping(ref data) => {
                 let content = str::from_utf8(data)?;
-                Ok(Item::new(content.to_string(), "Ping".to_string()))
+                let content = prettify(content)?;
+                let item = Item::new(content, "Ping".to_string());
+                Ok(item)
             }
             Message::Pong(ref data) => {
                 let content = str::from_utf8(data)?;
-                Ok(Item::new(content.to_string(), "Pong".to_string()))
+                let content = prettify(content)?;
+                let item = Item::new(content, "Pong".to_string());
+                Ok(item)
             }
             Message::Frame(frame) => {
-                let content = str::from_utf8(&frame.payload())?;
-                Ok(Item::new(content.to_string(), "Frame".to_string()))
+                let content = str::from_utf8(frame.payload())?;
+                let content = prettify(content)?;
+                let item = Item::new(content, "Frame".to_string());
+                Ok(item)
             }
             Message::Close(Some(frame)) => {
                 let content = frame.reason;
-                Ok(Item::new(content.to_string(), "Close".to_string()))
+                let content = prettify(&content)?;
+                let item = Item::new(content, "Close".to_string());
+                Ok(item)
             }
             Message::Close(None) => Ok(Item::new("Close".to_string(), "Close".to_string())),
         }

@@ -3,4 +3,5 @@ members = [
     "websocket-utils",
     "websocket-client",
     "logger",
+    "pretty-json",
 ]
