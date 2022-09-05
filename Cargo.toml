@@ -2,6 +2,7 @@
 members = [
     "websocket-utils",
     "websocket-client",
+    "http-client",
     "logger",
     "pretty-json",
 ]
