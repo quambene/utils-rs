@@ -6,8 +6,9 @@ Testing and utility tools written in Rust.
 
 - [Install](#install)
 - [Tools](#tools)
-  - [websocket-client](#websocket-client)
   - [pretty-json](#pretty-json)
+  - [websocket-client](#websocket-client)
+  - [http-client](#http-client)
 
 ## Install
 
@@ -17,6 +18,18 @@ cd utils-rs
 ```
 
 ## Tools
+
+### pretty-json
+
+Provides pluggable and customized `Formatter` for [`serde_json::Serializer`](https://docs.rs/serde_json/latest/serde_json/struct.Serializer.html).
+
+#### Usage
+
+``` rust
+let buf = Vec::new();
+let formatter = pretty_json::Formatter::with_indent(b"  ");
+let mut ser = serde_json::Serializer::with_formatter(buf, formatter);
+```
 
 ### websocket-client
 
@@ -43,14 +56,28 @@ The client connects to websocket endpoint `apiUrl` and subscribes to a channel b
     CONFIG_PATH=config.json cargo run -p websocket-client
     ```
 
-### pretty-json
+### http-client
 
-Provides pluggable and customized `Formatter` for [`serde_json::Serializer`](https://docs.rs/serde_json/latest/serde_json/struct.Serializer.html).
+Utility tool for testing http endpoints.
 
 #### Usage
 
-``` rust
-let buf = Vec::new();
-let formatter = pretty_json::Formatter::with_indent(b"  ");
-let mut ser = serde_json::Serializer::with_formatter(buf, formatter);
-```
+1. Create config file, e.g. `config.json`, with content:
+
+    ``` bash
+    {
+        "apiUrl": "https://...",
+        "apiEndpoint": "/my_endoint",
+        "requestMethod": "POST",
+        "requestBody": {
+            ...
+        }
+    }
+    ```
+
+2. Run client with environment variable `CONFIG_PATH` for package
+   `http-client`:
+
+    ``` bash
+    CONFIG_PATH=config.json cargo run -p http-client
+    ```
