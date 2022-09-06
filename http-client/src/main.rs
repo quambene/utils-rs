@@ -1,12 +1,17 @@
 mod config;
 
+use crate::config::RequestMethod;
 use anyhow::Context;
 use config::Config;
 use log::info;
-use reqwest::get;
+use reqwest::{
+    get,
+    header::{HeaderMap, HeaderName, HeaderValue},
+    Client,
+};
 use serde::Serialize;
 use serde_json::Value;
-use std::{env, fs, path::Path};
+use std::{env, fs, path::Path, str::FromStr};
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
@@ -24,7 +29,24 @@ async fn main() -> Result<(), anyhow::Error> {
         "Sending {} request to api endpoint '{}'",
         config.request_method, url
     );
-    let response = get(url).await?.text().await?;
+
+    let response = match config.request_method {
+        RequestMethod::Get => get(url).await?.text().await?,
+        RequestMethod::Post => {
+            let mut header_map = HeaderMap::new();
+
+            if let Some(headers) = config.headers {
+                for header in headers {
+                    let key = HeaderName::from_str(&header.key)?;
+                    let value = HeaderValue::from_str(&header.value)?;
+                    header_map.insert(key, value);
+                }
+            }
+
+            let client = Client::new().post(url).headers(header_map);
+            client.send().await?.text().await?
+        }
+    };
 
     println!("Response: {}", prettify(&response)?);
 

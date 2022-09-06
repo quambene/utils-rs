@@ -68,6 +68,7 @@ Utility tool for testing http endpoints.
     {
         "apiUrl": "https://...",
         "apiEndpoint": "/my_endoint",
+        "headers": [{"key": "MY_KEY", "value": "my_value"}],
         "requestMethod": "POST",
         "requestBody": {
             ...
