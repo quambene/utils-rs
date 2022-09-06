@@ -35,7 +35,7 @@ async fn main() -> Result<(), anyhow::Error> {
         RequestMethod::Post => {
             let mut header_map = HeaderMap::new();
 
-            if let Some(headers) = config.headers {
+            if let Some(headers) = config.request_headers {
                 for header in headers {
                     let key = HeaderName::from_str(&header.key)?;
                     let value = HeaderValue::from_str(&header.value)?;

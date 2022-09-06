@@ -14,13 +14,11 @@ impl<'de> Deserialize<'de> for RequestMethod {
     where
         D: Deserializer<'de>,
     {
-        let request_method = match <&str>::deserialize(deserializer)? {
-            GET => RequestMethod::Get,
-            POST => RequestMethod::Post,
-            others => return Err(de::Error::unknown_variant(others, &[GET, POST])),
-        };
-
-        Ok(request_method)
+        match <&str>::deserialize(deserializer)? {
+            GET => Ok(RequestMethod::Get),
+            POST => Ok(RequestMethod::Post),
+            others => Err(de::Error::unknown_variant(others, &[GET, POST])),
+        }
     }
 }
 

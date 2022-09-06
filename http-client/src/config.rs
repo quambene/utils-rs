@@ -14,7 +14,7 @@ pub struct Header {
 pub struct Config {
     pub api_url: String,
     pub api_endpoint: String,
-    pub headers: Option<Vec<Header>>,
+    pub request_headers: Option<Vec<Header>>,
     pub request_method: RequestMethod,
     pub request_body: Option<Value>,
 }
