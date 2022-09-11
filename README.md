@@ -66,12 +66,19 @@ Utility tool for testing http endpoints.
 
     ``` bash
     {
-        "apiUrl": "https://...",
-        "apiEndpoint": "/my_endoint",
-        "headers": [{"key": "MY_KEY", "value": "my_value"}],
-        "requestMethod": "POST",
-        "requestBody": {
-            ...
+        "api": {
+            "url": "https://...",
+            "endpoint": "/my_endoint"
+        },
+        "request": {
+            "method": "POST",
+            "headers": [{"key": "MY_KEY", "value": "my_value"}],
+            "body": {
+                "myKey": "my_value"
+            },
+            "queryString": {
+                "myKey": "my_value"
+            }
         }
     }
     ```

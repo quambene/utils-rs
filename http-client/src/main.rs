@@ -5,7 +5,6 @@ use anyhow::Context;
 use config::Config;
 use log::info;
 use reqwest::{
-    get,
     header::{HeaderMap, HeaderName, HeaderValue},
     Client,
 };
@@ -23,38 +22,57 @@ async fn main() -> Result<(), anyhow::Error> {
     let config_path = Path::new(&config_path);
     let config_file = fs::read_to_string(config_path).context("Can't read file")?;
     let config: Config = serde_json::from_str(&config_file).context("Can't deserialize json")?;
-    let url = format!("{}{}", config.api_url, config.api_endpoint);
+    let url = format!("{}{}", config.api.url, config.api.endpoint);
 
     info!(
         "Sending {} request to api endpoint '{}'",
-        config.request_method, url
+        config.request.method, url
     );
 
-    let response = match config.request_method {
-        RequestMethod::Get => get(url).await?.text().await?,
-        RequestMethod::Post => {
-            let mut header_map = HeaderMap::new();
+    let client = Client::new();
 
-            if let Some(headers) = config.request_headers {
-                for header in headers {
-                    let key = HeaderName::from_str(&header.key)?;
-                    let value = HeaderValue::from_str(&header.value)?;
-                    header_map.insert(key, value);
-                }
-            }
+    let mut header_map = HeaderMap::new();
 
-            let client = Client::new().post(url).headers(header_map);
-            client.send().await?.text().await?
+    if let Some(headers) = config.request.headers {
+        for header in headers {
+            let key = HeaderName::from_str(&header.key)?;
+            let value = HeaderValue::from_str(&header.value)?;
+            header_map.insert(key, value);
         }
+    }
+
+    let mut request = match config.request.method {
+        RequestMethod::Get => client.get(url),
+        RequestMethod::Post => client.post(url),
+        RequestMethod::Put => client.put(url),
+        RequestMethod::Delete => client.delete(url),
     };
 
-    println!("Response: {}", prettify(&response)?);
+    request = request.headers(header_map);
+
+    if let Some(value) = &config.request.query_string {
+        request = request.query(value)
+    };
+
+    if let Some(value) = &config.request.body {
+        request = request.json(value)
+    };
+
+    let response = request.send().await?;
+    let response_status = response.status();
+    let response_body = response.text().await?;
+
+    println!("Status code: {}", response_status);
+
+    match serde_json::from_str::<Value>(&response_body) {
+        Ok(value) => println!("Response body: {}", prettify(value)?),
+        Err(_) => println!("Response body: {}", response_body),
+    }
 
     Ok(())
 }
 
-pub fn prettify(obj: &str) -> Result<String, anyhow::Error> {
-    let obj: Value = serde_json::from_str(obj)?;
+pub fn prettify(obj: Value) -> Result<String, anyhow::Error> {
     let buf = Vec::new();
     let formatter = pretty_json::Formatter::with_indent(b"  ");
     let mut ser = serde_json::Serializer::with_formatter(buf, formatter);
