@@ -1,0 +1,16 @@
+[package]
+name = "auth-utils"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+path = "src/lib.rs"
+name = "auth_utils"
+
+[dependencies]
+anyhow = "1.0.64"
+digest = "0.10.3"
+sha2 = "0.10.5"
+sha3 = "0.10.4"
+hmac = "0.12.1"
+hex = "0.4.3"
