@@ -10,7 +10,7 @@ use url::Url;
 #[serde(rename_all = "camelCase")]
 pub struct Config {
     api_url: String,
-    subscription_request: Value,
+    subscription_request: Option<Value>,
 }
 
 pub async fn connect(
@@ -29,14 +29,13 @@ pub async fn connect(
 
         let (mut sink, stream) = socket.split();
 
-        let subscription_message = Message::Text(config.subscription_request.to_string());
+        if let Some(subscription_request) = config.subscription_request {
+            let subscription_message = Message::Text(subscription_request.to_string());
 
-        info!(
-            "Sending subscription request: {}",
-            config.subscription_request
-        );
+            info!("Sending subscription request: {}", subscription_request);
 
-        sink.send(subscription_message).await?;
+            sink.send(subscription_message).await?;
+        }
 
         Ok(stream)
     } else {
