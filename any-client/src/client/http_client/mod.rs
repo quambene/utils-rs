@@ -67,7 +67,7 @@ pub async fn use_http_client(config_file: String) -> Result<(), anyhow::Error> {
         },
     );
 
-    info!("Sending request\n\n{}", formatted_request);
+    info!("Sending request\n{}", formatted_request);
 
     let response = client.execute(request).await?;
 
@@ -86,7 +86,7 @@ pub async fn use_http_client(config_file: String) -> Result<(), anyhow::Error> {
         }
     }
 
-    info!("Receiving response\n\n{}", formatted_response);
+    info!("Receiving response\n{}", formatted_response);
 
     Ok(())
 }

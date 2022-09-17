@@ -10,6 +10,8 @@ pub use tungstenite::{Error, Message};
 use url::Url;
 
 pub async fn use_websocket_client(config_file: String) -> Result<(), anyhow::Error> {
+    info!("Using websocket client");
+
     let config = serde_json::from_str(&config_file)?;
 
     let mut stream = connect(config).await?;
