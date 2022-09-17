@@ -1,9 +1,14 @@
+pub mod config;
 pub mod request;
 pub mod response;
 
-use crate::{
-    client::http_client::{request::Request, response::Response},
-    config::{Config, RequestMethod},
+use crate::client::{
+    http_client::{
+        config::{Config, RequestMethod},
+        request::Request,
+        response::Response,
+    },
+    prettify_json,
 };
 use anyhow::Context;
 use log::info;
@@ -11,7 +16,6 @@ use reqwest::{
     header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE},
     Client, Url, Version,
 };
-use serde::Serialize;
 use serde_json::Value;
 use std::str::FromStr;
 
@@ -85,12 +89,4 @@ pub async fn use_http_client(config_file: String) -> Result<(), anyhow::Error> {
     info!("Receiving response\n\n{}", formatted_response);
 
     Ok(())
-}
-
-fn prettify_json(obj: Value) -> Result<String, anyhow::Error> {
-    let buf = Vec::new();
-    let formatter = pretty_json::Formatter::with_indent(b"  ");
-    let mut ser = serde_json::Serializer::with_formatter(buf, formatter);
-    obj.serialize(&mut ser)?;
-    Ok(String::from_utf8(ser.into_inner())?)
 }

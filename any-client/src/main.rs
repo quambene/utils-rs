@@ -1,8 +1,10 @@
 mod client;
-mod config;
 
-use crate::{client::use_http_client, config::ClientType};
 use anyhow::Context;
+use client::{
+    client_type::ClientType, http_client::use_http_client, websocket_client::use_websocket_client,
+    Client,
+};
 use log::info;
 use std::{env, fs, path::Path};
 
@@ -16,12 +18,12 @@ async fn main() -> Result<(), anyhow::Error> {
     let config_path = Path::new(&config_path);
     let config_file = fs::read_to_string(config_path).context("Can't read file")?;
 
-    let client: config::Client =
+    let client: Client =
         serde_json::from_str(&config_file).context("Can't deserialize client value")?;
 
     match client.client_type {
         ClientType::Http => use_http_client(config_file).await?,
-        ClientType::Websocket => todo!(),
+        ClientType::Websocket => use_websocket_client(config_file).await?,
         ClientType::Grpc => todo!(),
     }
 

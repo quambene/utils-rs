@@ -1,7 +1,5 @@
-mod client_type;
 mod request_method;
 
-pub(crate) use self::client_type::ClientType;
 pub(crate) use self::request_method::RequestMethod;
 use serde::Deserialize;
 use serde_json::Value;
@@ -11,12 +9,6 @@ use serde_json::Value;
 pub struct Config {
     pub api: Api,
     pub request: Request,
-}
-
-#[derive(Deserialize)]
-pub struct Client {
-    #[serde(rename = "client")]
-    pub client_type: ClientType,
 }
 
 #[derive(Deserialize)]
