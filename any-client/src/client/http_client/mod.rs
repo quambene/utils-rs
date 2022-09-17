@@ -16,6 +16,8 @@ use serde_json::Value;
 use std::str::FromStr;
 
 pub async fn use_http_client(config_file: String) -> Result<(), anyhow::Error> {
+    info!("Using http client");
+
     let config: Config = serde_json::from_str(&config_file).context("Can't deserialize json")?;
     let url = format!("{}{}", config.api.url, config.api.endpoint);
     let url = Url::parse(&url)?;
@@ -73,7 +75,7 @@ pub async fn use_http_client(config_file: String) -> Result<(), anyhow::Error> {
     );
 
     if let Some(content_type) = formatted_response.headers.get(CONTENT_TYPE) {
-        if content_type == "application/json" {
+        if content_type.to_str()?.contains("application/json") {
             if let Ok(response_body) = serde_json::from_str::<Value>(&formatted_response.body) {
                 formatted_response.body = prettify_json(response_body)?;
             };
