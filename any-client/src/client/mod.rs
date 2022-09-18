@@ -19,7 +19,7 @@ pub struct Client {
 pub fn prettify(obj: &str) -> Result<String, JsonError> {
     let obj: Value = serde_json::from_str(obj)?;
     let buf = Vec::new();
-    let formatter = pretty_json::Formatter::with_indent(b"  ");
+    let formatter = pretty_json::Formatter::with_indent(b"    ");
     let mut ser = serde_json::Serializer::with_formatter(buf, formatter);
     obj.serialize(&mut ser)?;
     Ok(String::from_utf8(ser.into_inner())?)
@@ -27,7 +27,7 @@ pub fn prettify(obj: &str) -> Result<String, JsonError> {
 
 pub fn prettify_json(obj: Value) -> Result<String, anyhow::Error> {
     let buf = Vec::new();
-    let formatter = pretty_json::Formatter::with_indent(b"  ");
+    let formatter = pretty_json::Formatter::with_indent(b"    ");
     let mut ser = serde_json::Serializer::with_formatter(buf, formatter);
     obj.serialize(&mut ser)?;
     Ok(String::from_utf8(ser.into_inner())?)
