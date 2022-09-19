@@ -6,6 +6,7 @@ Cargo.lock
 /config
 **/*.json
 **/*.yaml
+**/*.proto
 
 # Environment
 **/.env

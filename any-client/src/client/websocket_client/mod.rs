@@ -1,19 +1,34 @@
+pub mod config;
+pub mod item;
+
+use self::{config::Config, item::Item};
+use crate::client::prettify_json;
 use anyhow::anyhow;
 use futures::{SinkExt, Stream, StreamExt};
-use log::info;
-use serde::Deserialize;
-use serde_json::Value;
+use log::{error, info};
 pub use tungstenite::{Error, Message};
 use url::Url;
 
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Config {
-    api_url: String,
-    subscription_request: Option<Value>,
+pub async fn use_websocket_client(config_file: String) -> Result<(), anyhow::Error> {
+    info!("Using websocket client");
+
+    let config = serde_json::from_str(&config_file)?;
+
+    let mut stream = connect(config).await?;
+
+    info!("Receiving stream");
+
+    while let Some(item) = stream.next().await {
+        match item {
+            Ok(msg) => println!("{}", Item::try_from(msg)?),
+            Err(err) => error!("{}", err),
+        }
+    }
+
+    Ok(())
 }
 
-pub async fn connect(
+async fn connect(
     config: Config,
 ) -> Result<impl Stream<Item = Result<Message, Error>>, anyhow::Error> {
     info!("Connecting to websocket at url '{}'", config.api_url);
@@ -32,7 +47,10 @@ pub async fn connect(
         if let Some(subscription_request) = config.subscription_request {
             let subscription_message = Message::Text(subscription_request.to_string());
 
-            info!("Sending subscription request: {}", subscription_request);
+            info!(
+                "Sending subscription message\nMessage: {}",
+                prettify_json(subscription_request)?
+            );
 
             sink.send(subscription_message).await?;
         }

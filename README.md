@@ -4,26 +4,14 @@
 
 Testing and utility tools written in Rust.
 
-- [Install](#install)
-- [Tools](#tools)
-  - [pretty-json](#pretty-json)
-  - [websocket-client](#websocket-client)
-  - [http-client](#http-client)
+- [pretty-json](#pretty-json)
+- [any-client](#any-client)
 
-## Install
-
-``` bash
-git clone git@github.com:quambene/utils-rs.git
-cd utils-rs
-```
-
-## Tools
-
-### pretty-json
+## pretty-json
 
 Provides pluggable and customized `Formatter` for [`serde_json::Serializer`](https://docs.rs/serde_json/latest/serde_json/struct.Serializer.html).
 
-#### Usage
+### Usage
 
 ``` rust
 let buf = Vec::new();
@@ -31,61 +19,61 @@ let formatter = pretty_json::Formatter::with_indent(b"  ");
 let mut ser = serde_json::Serializer::with_formatter(buf, formatter);
 ```
 
-### websocket-client
+## any-client
 
-Utility tool for testing websocket endpoints for streaming data.
+Utility tool for testing http, websocket, and grpc endpoints.
 
-The client connects to websocket endpoint `apiUrl` and subscribes to a channel by sending the request `subscriptionRequest`.
+### Install any-client
 
-#### Usage
+``` bash
+git clone git@github.com:quambene/utils-rs.git
+cd utils-rs/any-client
+cargo install --path .
+```
 
-1. Create config file, e.g. `config.json`, with content:
+### Usage
 
-    ``` bash
-    {
-        "apiUrl": "wss://...",
-        "subscriptionRequest": {
-            ...
-        }
-    }
-    ```
+``` bash
+CONFIG_PATH=config.json any-client
 
-2. Run client with environment variable `CONFIG_PATH` for package `websocket-client`:
+# Development
+CONFIG_PATH=config.json cargo run -p any-client
+```
 
-    ``` bash
-    CONFIG_PATH=config.json cargo run -p websocket-client
-    ```
+### Configure HTTP client
 
-### http-client
+Create config file, e.g. `config.json`, with content:
 
-Utility tool for testing http endpoints.
-
-#### Usage
-
-1. Create config file, e.g. `config.json`, with content:
-
-    ``` bash
-    {
-        "api": {
-            "url": "https://...",
-            "endpoint": "/my_endoint"
+``` bash
+{
+    "client": "http",
+    "api": {
+        "url": "https://...",
+        "endpoint": "/my_endoint"
+    },
+    "request": {
+        "method": "POST",
+        "headers": [{"key": "MY_KEY", "value": "my_value"}],
+        "body": {
+            "myKey": "my_value"
         },
-        "request": {
-            "method": "POST",
-            "headers": [{"key": "MY_KEY", "value": "my_value"}],
-            "body": {
-                "myKey": "my_value"
-            },
-            "queryString": {
-                "myKey": "my_value"
-            }
+        "queryString": {
+            "myKey": "my_value"
         }
     }
-    ```
+}
+```
 
-2. Run client with environment variable `CONFIG_PATH` for package
-   `http-client`:
+### Configure websocket client
 
-    ``` bash
-    CONFIG_PATH=config.json cargo run -p http-client
-    ```
+Create config file, e.g. `config.json`, with content:
+
+``` bash
+{
+    "client": "websocket",
+    "apiUrl": "wss://...",
+    "subscriptionRequest": {
+        ...
+    }
+}
+```

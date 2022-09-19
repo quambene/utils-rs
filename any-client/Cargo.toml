@@ -1,0 +1,24 @@
+[package]
+name = "any-client"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+path = "src/main.rs"
+name = "any-client"
+
+[dependencies]
+log = "0.4.17"
+logger = { version = "0.1.0", path = "../logger" }
+anyhow = "1.0.64"
+thiserror = "1.0.35"
+serde = { version = "1.0.144", features = ["derive"] }
+serde_json = "1.0.85"
+pretty-json = { version = "0.1.0", path = "../pretty-json" }
+reqwest = { version = "0.11.11", features = ["json"] }
+websocket-utils = { version = "0.1.0", path = "../websocket-utils" }
+futures = "0.3.24"
+tungstenite = { version = "0.17.3", features = ["rustls-tls-native-roots"] }
+tokio-tungstenite = { version = "0.17.2", features = ["rustls-tls-native-roots"] }
+tokio = { version = "1.21.0", features = ["rt-multi-thread", "macros"] }
+url = "2.3.1"
