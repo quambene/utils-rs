@@ -1,8 +1,11 @@
 use prost_types::{
-    enum_descriptor_proto::EnumReservedRange, source_code_info::Location,
-    uninterpreted_option::NamePart, DescriptorProto, EnumDescriptorProto, EnumOptions,
-    EnumValueDescriptorProto, EnumValueOptions, FieldDescriptorProto, FieldOptions,
-    FileDescriptorProto, FileOptions, MessageOptions, MethodDescriptorProto, MethodOptions,
+    descriptor_proto::{ExtensionRange, ReservedRange},
+    enum_descriptor_proto::EnumReservedRange,
+    source_code_info::Location,
+    uninterpreted_option::NamePart,
+    DescriptorProto, EnumDescriptorProto, EnumOptions, EnumValueDescriptorProto, EnumValueOptions,
+    ExtensionRangeOptions, FieldDescriptorProto, FieldOptions, FileDescriptorProto, FileOptions,
+    MessageOptions, MethodDescriptorProto, MethodOptions, OneofDescriptorProto, OneofOptions,
     ServiceDescriptorProto, ServiceOptions, SourceCodeInfo, UninterpretedOption,
 };
 
@@ -49,18 +52,96 @@ fn convert_descriptor_proto(
 ) -> DescriptorProto {
     DescriptorProto {
         name: descriptor_proto.name,
-        field: descriptor_proto.field.into_iter().map(convert_field_descriptor_proto).collect(),
-        extension: descriptor_proto.extension.into_iter().map(convert_field_descriptor_proto).collect(),
-        nested_type: descriptor_proto.nested_type.into_iter().map(convert_descriptor_proto).collect(),
-        enum_type: descriptor_proto.enum_type.into_iter().map(convert_enum_descriptor_proto).collect(),
-        extension_range: todo!(),
-        oneof_decl: todo!(),
-        options: descriptor_proto
+        field: descriptor_proto
+            .field
+            .into_iter()
+            .map(convert_field_descriptor_proto)
+            .collect(),
+        extension: descriptor_proto
+            .extension
+            .into_iter()
+            .map(convert_field_descriptor_proto)
+            .collect(),
+        nested_type: descriptor_proto
+            .nested_type
+            .into_iter()
+            .map(convert_descriptor_proto)
+            .collect(),
+        enum_type: descriptor_proto
+            .enum_type
+            .into_iter()
+            .map(convert_enum_descriptor_proto)
+            .collect(),
+        extension_range: descriptor_proto
+            .extension_range
+            .into_iter()
+            .map(convert_extension_range)
+            .collect(),
+        oneof_decl: descriptor_proto
+            .oneof_decl
+            .into_iter()
+            .map(convert_oneof_descriptor_proto)
+            .collect(),
+        options: descriptor_proto.options.0.map(convert_message_options),
+        reserved_range: descriptor_proto
+            .reserved_range
+            .into_iter()
+            .map(convert_reserved_range)
+            .collect(),
+        reserved_name: descriptor_proto.reserved_name,
+    }
+}
+
+fn convert_reserved_range(
+    reserved_range: protobuf::descriptor::descriptor_proto::ReservedRange,
+) -> ReservedRange {
+    ReservedRange {
+        start: reserved_range.start,
+        end: reserved_range.end,
+    }
+}
+
+fn convert_oneof_descriptor_proto(
+    oneof_descriptor_proto: protobuf::descriptor::OneofDescriptorProto,
+) -> OneofDescriptorProto {
+    OneofDescriptorProto {
+        name: oneof_descriptor_proto.name,
+        options: oneof_descriptor_proto.options.0.map(convert_oneof_options),
+    }
+}
+
+fn convert_oneof_options(oneof_options: Box<protobuf::descriptor::OneofOptions>) -> OneofOptions {
+    OneofOptions {
+        uninterpreted_option: oneof_options
+            .uninterpreted_option
+            .into_iter()
+            .map(convert_uninterpreted_option)
+            .collect(),
+    }
+}
+
+fn convert_extension_range(
+    extension_range: protobuf::descriptor::descriptor_proto::ExtensionRange,
+) -> ExtensionRange {
+    ExtensionRange {
+        start: extension_range.start,
+        end: extension_range.end,
+        options: extension_range
             .options
             .0
-            .map(|el| convert_message_options(*el)),
-        reserved_range: todo!(),
-        reserved_name: descriptor_proto.reserved_name,
+            .map(convert_extension_range_options),
+    }
+}
+
+fn convert_extension_range_options(
+    extension_range_options: Box<protobuf::descriptor::ExtensionRangeOptions>,
+) -> ExtensionRangeOptions {
+    ExtensionRangeOptions {
+        uninterpreted_option: extension_range_options
+            .uninterpreted_option
+            .into_iter()
+            .map(convert_uninterpreted_option)
+            .collect(),
     }
 }
 
@@ -167,7 +248,7 @@ fn convert_field_descriptor_proto(
 }
 
 fn convert_message_options(
-    message_options: protobuf::descriptor::MessageOptions,
+    message_options: Box<protobuf::descriptor::MessageOptions>,
 ) -> MessageOptions {
     MessageOptions {
         message_set_wire_format: message_options.message_set_wire_format,
