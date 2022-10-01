@@ -235,8 +235,8 @@ fn convert_field_descriptor_proto(
     FieldDescriptorProto {
         name: field_descriptor_proto.name,
         number: field_descriptor_proto.number,
-        label: FieldDescriptorProto::default().label,
-        r#type: FieldDescriptorProto::default().r#type,
+        label: field_descriptor_proto.label.map(|el| el.value()),
+        r#type: field_descriptor_proto.type_.map(|el| el.value()),
         type_name: field_descriptor_proto.type_name,
         extendee: field_descriptor_proto.extendee,
         default_value: field_descriptor_proto.default_value,
@@ -295,7 +295,7 @@ fn convert_file_options(file_options: Box<protobuf::descriptor::FileOptions>) ->
         java_multiple_files: file_options.java_multiple_files,
         java_generate_equals_and_hash: file_options.java_generate_equals_and_hash,
         java_string_check_utf8: file_options.java_string_check_utf8,
-        optimize_for: FileOptions::default().optimize_for,
+        optimize_for: file_options.optimize_for.map(|el| el.value()),
         go_package: file_options.go_package,
         cc_generic_services: file_options.cc_generic_services,
         java_generic_services: file_options.java_generic_services,
@@ -342,9 +342,9 @@ fn convert_location(location: protobuf::descriptor::source_code_info::Location) 
 
 fn convert_field_options(field_options: Box<protobuf::descriptor::FieldOptions>) -> FieldOptions {
     FieldOptions {
-        ctype: FieldOptions::default().ctype,
+        ctype: field_options.ctype.map(|el| el.value()),
         packed: field_options.packed,
-        jstype: FieldOptions::default().jstype,
+        jstype: field_options.jstype.map(|el| el.value()),
         lazy: field_options.lazy,
         deprecated: field_options.deprecated,
         weak: field_options.weak,
@@ -390,7 +390,7 @@ fn convert_method_options(
 ) -> MethodOptions {
     MethodOptions {
         deprecated: method_options.deprecated,
-        idempotency_level: MethodOptions::default().idempotency_level,
+        idempotency_level: method_options.idempotency_level.map(|el| el.value()),
         uninterpreted_option: method_options
             .uninterpreted_option
             .into_iter()
