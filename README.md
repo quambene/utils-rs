@@ -73,7 +73,7 @@ Create config file, e.g. `config.json`, with content:
     "client": "websocket",
     "apiUrl": "wss://...",
     "subscriptionRequest": {
-        ...
+        "myKey": "my_value"
     }
 }
 ```
@@ -96,7 +96,7 @@ Create config file, e.g. `config.json`, with content:
         "method": "MyMethod",
         "message": "MyMessage",
         "request": {
-            ...
+            "myKey": "my_value"
         }
     }
 }
