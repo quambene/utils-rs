@@ -35,9 +35,13 @@ cargo install --path .
 
 ``` bash
 CONFIG_PATH=config.json any-client
+```
 
-# Development
-CONFIG_PATH=config.json cargo run -p any-client
+### Development
+
+``` bash
+cd utils-rs/any-client
+CONFIG_PATH=config.json cargo run
 ```
 
 ### Configure HTTP client
