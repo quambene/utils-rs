@@ -1,10 +1,10 @@
 mod client;
 
-use anyhow::Context;
-use client::{
-    client_type::ClientType, http_client::use_http_client, websocket_client::use_websocket_client,
-    Client,
+use crate::client::{
+    client_type::ClientType, grpc_client::use_grpc_client, http_client::use_http_client,
+    websocket_client::use_websocket_client, Client,
 };
+use anyhow::Context;
 use log::info;
 use std::{env, fs, path::Path};
 
@@ -24,7 +24,7 @@ async fn main() -> Result<(), anyhow::Error> {
     match client.client_type {
         ClientType::Http => use_http_client(config_file).await?,
         ClientType::Websocket => use_websocket_client(config_file).await?,
-        ClientType::Grpc => todo!(),
+        ClientType::Grpc => use_grpc_client(config_file).await?,
     }
 
     Ok(())

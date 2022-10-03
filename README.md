@@ -44,7 +44,7 @@ CONFIG_PATH=config.json cargo run -p any-client
 
 Create config file, e.g. `config.json`, with content:
 
-``` bash
+``` json
 {
     "client": "http",
     "api": {
@@ -68,12 +68,36 @@ Create config file, e.g. `config.json`, with content:
 
 Create config file, e.g. `config.json`, with content:
 
-``` bash
+``` json
 {
     "client": "websocket",
     "apiUrl": "wss://...",
     "subscriptionRequest": {
         ...
+    }
+}
+```
+
+### Configure grpc client
+
+Create config file, e.g. `config.json`, with content:
+
+``` json
+{
+    "client": "grpc",
+    "api": {
+        "url": "https://...",
+    },
+    "proto": {
+        "path": "my_proto_dir",
+        "file": "my_proto_file.proto",
+        "package": "my_package",
+        "service": "MyService",
+        "method": "MyMethod",
+        "message": "MyMessage",
+        "request": {
+            ...
+        }
     }
 }
 ```
