@@ -91,7 +91,7 @@ Create config file, e.g. `config.json`, with content:
 }
 ```
 
-where `query_string` and `request` is optional. The `query_string` is leading to the url `wss://my_url.com/my_endoint?myParam1=my_value1&myParam2=my_value2`.
+where `query_string` and `request` are optional. The `query_string` is leading to the url `wss://my_url.com/my_endoint?myParam1=my_value1&myParam2=my_value2`.
 
 ### Configure grpc client
 
