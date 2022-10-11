@@ -16,6 +16,7 @@ serde = { version = "1.0.144", features = ["derive"] }
 serde_json = "1.0.85"
 pretty-json = { version = "0.1.0", path = "../pretty-json" }
 url = "2.3.1"
+form_urlencoded = "1.1.0"
 http = "0.2.8"
 reqwest = { version = "0.11.11", features = ["json"] }
 futures = "0.3.24"

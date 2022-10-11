@@ -6,6 +6,7 @@ use crate::client::prettify_json;
 use anyhow::anyhow;
 use futures::{SinkExt, Stream, StreamExt};
 use log::{error, info};
+use std::collections::HashMap;
 pub use tungstenite::{Error, Message};
 use url::Url;
 
@@ -31,10 +32,35 @@ pub async fn use_websocket_client(config_file: String) -> Result<(), anyhow::Err
 async fn connect(
     config: Config,
 ) -> Result<impl Stream<Item = Result<Message, Error>>, anyhow::Error> {
-    info!("Connecting to websocket at url '{}'", config.api_url);
-    let api_url = Url::parse(&config.api_url)?;
+    let mut base_url = Url::parse(&format!("{}{}", &config.api.url, &config.api.endpoint))?;
 
-    let (socket, response) = tokio_tungstenite::connect_async(api_url).await?;
+    let mut key_value_pairs = HashMap::new();
+
+    if let Some(query_string) = &config.subscription.query_string {
+        if let Some(object) = query_string.as_object() {
+            for (key, value) in object {
+                if let Some(value) = value.as_str() {
+                    key_value_pairs.insert(key, value);
+                }
+            }
+        }
+    }
+
+    let url_encoded = if !key_value_pairs.is_empty() {
+        Some(
+            form_urlencoded::Serializer::new(String::new())
+                .extend_pairs(key_value_pairs)
+                .finish(),
+        )
+    } else {
+        None
+    };
+
+    base_url.set_query(url_encoded.as_deref());
+
+    info!("Connecting to websocket at url '{}'", base_url);
+
+    let (socket, response) = tokio_tungstenite::connect_async(base_url).await?;
 
     // Check if protocol was changed to websocket protocol (see
     // https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml)
@@ -44,7 +70,7 @@ async fn connect(
 
         let (mut sink, stream) = socket.split();
 
-        if let Some(subscription_request) = config.subscription_request {
+        if let Some(subscription_request) = config.subscription.request {
             let subscription_message = Message::Text(subscription_request.to_string());
 
             info!(
