@@ -1,10 +1,6 @@
 [workspace]
 members = [
-    "websocket-utils",
-    "websocket-client",
-    "http-client",
     "logger",
     "pretty-json",
     "auth-utils",
-    "any-client",
 ]
