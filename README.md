@@ -53,7 +53,7 @@ Create config file, e.g. `config.json`, with content:
     "client": "http",
     "api": {
         "url": "https://...",
-        "endpoint": "/my_endoint"
+        "endpoint": "/my_endpoint"
     },
     "request": {
         "method": "POST",
@@ -75,12 +75,23 @@ Create config file, e.g. `config.json`, with content:
 ``` json
 {
     "client": "websocket",
-    "apiUrl": "wss://...",
-    "subscriptionRequest": {
-        "myKey": "my_value"
+    "api": {
+        "url": "wss://my_url.com",
+        "endpoint": "/my_endpoint"
+    },
+    "subscription": {
+        "query_string": {
+            "myParam1": "my_value1",
+            "myParam2": "my_value2"
+        },
+        "request": {
+            "myKey": "my_value"
+        }
     }
 }
 ```
+
+where `query_string` and `request` is optional. The `query_string` is leading to the url `wss://my_url.com/my_endoint?myParam1=my_value1&myParam2=my_value2`.
 
 ### Configure grpc client
 
